@@ -9,16 +9,14 @@ let score = 0;
 const brickRowCount = 9;
 const brickColumnCount = 5;
 
-const playAgain = document.querySelector('.play-again');
-
 // Create ball props
 const ball = {
   x: canvas.width / 2,
   y: canvas.height / 2,
-  size: 6,
+  size: 10,
   speed: 4,
-  dx: 3.5,
-  dy: -3.5
+  dx: 4,
+  dy: -4
 };
 
 // Create paddle props
@@ -38,8 +36,7 @@ const brickInfo = {
   padding: 10,
   offsetX: 45,
   offsetY: 60,
-  visible: true,
-  health: 2
+  visible: true
 };
 
 // Create bricks
@@ -57,7 +54,7 @@ for (let i = 0; i < brickRowCount; i++) {
 function drawBall() {
   ctx.beginPath();
   ctx.arc(ball.x, ball.y, ball.size, 0, Math.PI * 2);
-  ctx.fillStyle = '#fc0000';
+  ctx.fillStyle = '#0095dd';
   ctx.fill();
   ctx.closePath();
 }
@@ -83,13 +80,7 @@ function drawBricks() {
     column.forEach(brick => {
       ctx.beginPath();
       ctx.rect(brick.x, brick.y, brick.w, brick.h);
-      if (brickInfo.health === 2) {
-        ctx.fillStyle = brick.visible ? '#51c42e' : 'transparent';
-      } else if (brickInfo.health === 1) {
-        ctx.fillStyle = brick.visible ? '#0095dd' : 'transparent';
-      } else {
-        ctx.fillStyle = brick.visible ? '#ff0000' : 'transparent';
-      }
+      ctx.fillStyle = brick.visible ? '#0095dd' : 'transparent';
       ctx.fill();
       ctx.closePath();
     });
@@ -148,6 +139,7 @@ function moveBall() {
         ) {
           ball.dy *= -1;
           brick.visible = false;
+
           increaseScore();
         }
       }
@@ -156,38 +148,16 @@ function moveBall() {
 
   // Hit bottom wall - Lose
   if (ball.y + ball.size > canvas.height) {
-    showResults();
-    ball.y = 0;
-    ball.x = 0;
-    document.querySelector('.score').textContent = score;
+    showAllBricks();
+    score = 0;
   }
-}
-
-////// Restart game
-playAgain.addEventListener('click', restartGame);
-
-function restartGame() {
-  score = 0;
-  ball.x = 400;
-  ball.y = 580;
-  ball.speed = 4;
-  paddle.x = 360;
-  showAllBricks();
-  showResults();
-}
-
-//////// Show results
-function showResults() {
-  document.querySelector('.result').classList.toggle('active');
 }
 
 // Increase score
 function increaseScore() {
   score++;
-  ball.speed += 0.1;
 
-  if (score % 45 === 0) {
-    brickInfo.health -= 1;
+  if (score % (brickRowCount * brickRowCount) === 0) {
     showAllBricks();
   }
 }
